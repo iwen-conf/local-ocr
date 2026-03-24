@@ -1,0 +1,97 @@
+{
+  "name": "local-ocr-gui",
+  "private": true,
+  "version": "0.2.0",
+  "description": "Offline OCR desktop app built with Electron, React, and PP-OCRv5",
+  "main": "electron/main.cjs",
+  "author": "iwen-conf",
+  "scripts": {
+    "prepare:ocr-models": "node ./scripts/prepare-paddle-models.mjs",
+    "postinstall": "npm --prefix frontend install && npm run prepare:ocr-models",
+    "dev:renderer": "npm --prefix frontend run dev -- --host 127.0.0.1 --port 5173",
+    "dev:electron": "wait-on tcp:5173 && cross-env ELECTRON_RENDERER_URL=http://127.0.0.1:5173 electron .",
+    "dev": "concurrently -k \"npm:dev:renderer\" \"npm:dev:electron\"",
+    "build:renderer": "npm run prepare:ocr-models && npm --prefix frontend run build",
+    "build": "npm run build:renderer && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --dir",
+    "dist": "npm run build:renderer && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder",
+    "dist:mac": "npm run build:renderer && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac dir",
+    "dist:win": "npm run build:renderer && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --win nsis portable --x64",
+    "dist:win:dir": "npm run build:renderer && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --win dir --x64"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0",
+    "electron": "^41.0.3",
+    "electron-builder": "^26.8.1",
+    "wait-on": "^9.0.4"
+  },
+  "build": {
+    "appId": "com.iwenconf.localocrgui",
+    "productName": "Local OCR Desk",
+    "directories": {
+      "output": "release",
+      "buildResources": "electron/resources"
+    },
+    "files": [
+      "electron/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "frontend/dist",
+        "to": "renderer",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "vendor/ocr-models",
+        "to": "ocr-models",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "mac": {
+      "icon": "electron/resources/icon.icns",
+      "target": [
+        "dir"
+      ]
+    },
+    "win": {
+      "icon": "electron/resources/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "artifactName": "${productName}-${version}-${arch}-setup.${ext}"
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}-${arch}-portable.${ext}"
+    }
+  },
+  "dependencies": {
+    "onnxruntime-node": "^1.24.3",
+    "ppu-ocv": "^2.0.0",
+    "ppu-paddle-ocr": "^4.1.1",
+    "word-list": "^4.1.0"
+  }
+}
