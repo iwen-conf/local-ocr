@@ -24,14 +24,23 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            frontend/package-lock.json
 
       - name: Show tool versions
         run: |
           node -v
           npm -v
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install root dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Install frontend dependencies
+        run: npm --prefix frontend ci
+
+      - name: Prepare OCR models
+        run: node ./scripts/prepare-paddle-models.mjs
 
       - name: Rebuild Electron native deps
         run: npx electron-builder install-app-deps
