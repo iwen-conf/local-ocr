@@ -13,10 +13,10 @@
     "dev": "concurrently -k \"npm:dev:renderer\" \"npm:dev:electron\"",
     "build:renderer": "node ./scripts/prepare-paddle-models.mjs && npm --prefix frontend run build",
     "build": "node ./scripts/prepare-paddle-models.mjs && npm --prefix frontend run build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --dir",
-    "dist": "node ./scripts/prepare-paddle-models.mjs && npm --prefix frontend run build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder",
-    "dist:mac": "node ./scripts/prepare-paddle-models.mjs && npm --prefix frontend run build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac dir",
-    "dist:win": "node ./scripts/prepare-paddle-models.mjs && npm --prefix frontend run build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --win nsis portable --x64",
-    "dist:win:dir": "node ./scripts/prepare-paddle-models.mjs && npm --prefix frontend run build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --win dir --x64"
+    "dist": "node ./scripts/prepare-paddle-models.mjs && npm --prefix frontend run build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never",
+    "dist:mac": "node ./scripts/prepare-paddle-models.mjs && npm --prefix frontend run build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never --mac dir",
+    "dist:win": "node ./scripts/prepare-paddle-models.mjs && npm --prefix frontend run build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never --win nsis portable --x64",
+    "dist:win:dir": "node ./scripts/prepare-paddle-models.mjs && npm --prefix frontend run build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never --win dir --x64"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",
