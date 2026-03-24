@@ -1,0 +1,82 @@
+name: build-windows
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  build-win-x64:
+    runs-on: windows-2022
+
+    defaults:
+      run:
+        shell: powershell
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Show tool versions
+        run: |
+          node -v
+          npm -v
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Rebuild Electron native deps
+        run: npx electron-builder install-app-deps
+
+      - name: Build Windows package
+        run: npm run dist:win
+
+      - name: Verify packaged OCR runtime
+        run: |
+          if (-not (Test-Path "release/win-unpacked/resources/ocr-models/ch_PP-OCRv5_server_det.onnx")) {
+            throw "Missing ch_PP-OCRv5_server_det.onnx"
+          }
+
+          if (-not (Test-Path "release/win-unpacked/resources/ocr-models/ch_PP-OCRv5_rec_server_infer.onnx")) {
+            throw "Missing ch_PP-OCRv5_rec_server_infer.onnx"
+          }
+
+          if (-not (Test-Path "release/win-unpacked/resources/ocr-models/en_PP-OCRv5_rec_mobile_infer.onnx")) {
+            throw "Missing en_PP-OCRv5_rec_mobile_infer.onnx"
+          }
+
+          if (-not (Test-Path "release/win-unpacked/resources/ocr-models/ppocrv5_dict.txt")) {
+            throw "Missing ppocrv5_dict.txt"
+          }
+
+          if (-not (Test-Path "release/win-unpacked/resources/ocr-models/ppocrv5_en_dict.txt")) {
+            throw "Missing ppocrv5_en_dict.txt"
+          }
+
+          if (-not (Test-Path "release/win-unpacked/resources/app.asar.unpacked/node_modules/onnxruntime-node/bin/napi-v6/win32/x64/onnxruntime_binding.node")) {
+            throw "Missing Windows onnxruntime binding"
+          }
+
+          $canvasPackage = Test-Path "release/win-unpacked/resources/app.asar.unpacked/node_modules/@napi-rs/canvas-win32-x64-msvc"
+          $canvasBinding = Get-ChildItem "release/win-unpacked/resources/app.asar.unpacked" -Recurse -Filter "skia.win32-x64-msvc.node" -ErrorAction SilentlyContinue
+
+          if (-not $canvasPackage -and -not $canvasBinding) {
+            throw "Missing Windows canvas native binding"
+          }
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: local-ocr-gui-win-x64
+          path: |
+            release/*.exe
+            release/win-unpacked/**
+          if-no-files-found: error
