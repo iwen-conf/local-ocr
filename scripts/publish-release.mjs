@@ -245,29 +245,33 @@ async function publishGithub({assetEntries, execute, releaseDraft, repoSpec, tar
     ...commonArgs,
   ];
 
-  const uploadArgs = [
-    'release',
-    'upload',
-    releaseDraft.tagName,
-    ...assetEntries.map((asset) => asset.path),
-    ...(clobber ? ['--clobber'] : []),
-    ...commonArgs,
-  ];
-
   if (!execute) {
     logDryRun('GitHub release plan', [
       `repo: ${repoSpec}`,
       `tag: ${releaseDraft.tagName}`,
       `action: ${releaseExists ? 'edit existing draft/release' : 'create new draft/release'}`,
       `command: gh ${releaseExists ? editArgs.join(' ') : createArgs.join(' ')}`,
-      `command: gh ${uploadArgs.join(' ')}`,
+      ...assetEntries.map((asset) => `command: gh release upload ${releaseDraft.tagName} ${asset.path}${clobber ? ' --clobber' : ''} ${commonArgs.join(' ')}`),
     ]);
     return;
   }
 
   ensurePublishPreconditions({provider: 'github', remoteName: 'github'});
   run('gh', releaseExists ? editArgs : createArgs);
-  run('gh', uploadArgs);
+
+  for (const asset of assetEntries) {
+    const uploadArgs = [
+      'release',
+      'upload',
+      releaseDraft.tagName,
+      asset.path,
+      ...(clobber ? ['--clobber'] : []),
+      ...commonArgs,
+    ];
+
+    run('gh', uploadArgs);
+    console.log(`[publish] github asset uploaded: ${path.basename(asset.path)}`);
+  }
 
   console.log(`[publish] github release updated: ${repoSpec} ${releaseDraft.tagName}`);
 }
