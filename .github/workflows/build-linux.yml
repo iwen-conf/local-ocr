@@ -1,4 +1,4 @@
-name: build-windows
+name: build-linux
 
 on:
   push:
@@ -8,12 +8,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-win-x64:
-    runs-on: windows
-
-    defaults:
-      run:
-        shell: powershell
+  build-linux-x64:
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout
@@ -24,6 +20,9 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            frontend/package-lock.json
 
       - name: Show tool versions
         run: |
@@ -42,17 +41,17 @@ jobs:
       - name: Rebuild Electron native deps
         run: npx electron-builder install-app-deps
 
-      - name: Build Windows package
-        run: npm run dist:win
+      - name: Build Linux package
+        run: npm run dist:linux
 
       - name: Verify packaged OCR runtime
-        run: node ./scripts/verify-packaged-runtime.mjs win
+        run: node ./scripts/verify-packaged-runtime.mjs linux
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: local-ocr-gui-win-x64
+          name: local-ocr-gui-linux-x64
           path: |
-            release/*.exe
-            release/win-unpacked/**
+            release/*.AppImage
+            release/linux-unpacked/**
           if-no-files-found: error

@@ -40,6 +40,11 @@
 - [x] 为导出流程增加命名模板，支持固定导出文件命名规则
 - [x] 为导出流程增加默认导出目录设置，并写入保存对话框默认路径
 - [x] 验证导出模板与默认目录改动不会破坏现有前端和 Electron 构建
+- [x] 盘点现有品牌资源和打包图标入口，确定 logo 接入点
+- [x] 设计一版可审核的首发 logo，并输出 review 素材
+- [x] 将新 logo 接入页头、打包图标和品牌资源目录
+- [x] 产出商品介绍文案和首发截图素材
+- [x] 验证新品牌资源不会破坏现有构建与打包
 
 ## Review
 
@@ -99,6 +104,25 @@
 - `npm run build` 再次通过，生成 2026-03-23 16:03:21 的 `release/mac-arm64/Local OCR Desk.app`
 - `npm run dist:win` 通过，生成 2026-03-22 17:02:04 的 `release/win-unpacked/Local OCR Desk.exe`
 - `npm run dist:win` 通过，生成 2026-03-22 17:02:34 的 `release/Local OCR Desk-0.2.0-x64-setup.exe` 和 2026-03-22 17:02:36 的 `release/Local OCR Desk-0.2.0-x64-portable.exe`
+- 已增加 Electron Builder `afterPack` 钩子，当前会在 Windows / Linux 产物阶段注入目标平台的 `@napi-rs/canvas` 原生包，避免跨平台打包时仅带入宿主机的 `darwin-arm64` 绑定
+- 已新增 `scripts/verify-packaged-runtime.mjs`，当前 macOS / Windows / Linux 三端统一使用同一套包内模型、ONNX Runtime 与 canvas 原生绑定校验逻辑
+- `npm run dist:mac` 通过，当前 macOS Apple Silicon 已生成正式 `release/Local OCR Desk-0.2.0-macOS-arm64.dmg`
+- `npm run dist:linux` 通过，生成 `release/Local OCR Desk-0.2.0.AppImage` 与 `release/linux-unpacked/`
+- 当前 macOS arm64 / Windows x64 / Linux x64 unpacked 产物均已验证包含各自平台匹配的 `@napi-rs/canvas` 绑定与 `onnxruntime-node` 绑定
+- 已新增 `scripts/write-release-draft.mjs` 与 `npm run write:release-draft -- <bundle-dir>` 入口，当前可基于 `DELIVERY_MANIFEST.json` 自动生成 `RELEASE_DRAFT.md` 与 `RELEASE_DRAFT.json`
+- 已新增 `scripts/publish-release.mjs` 与 `npm run publish:release:{github,gitea}` 入口，当前默认做 release `dry-run`，可基于最新 bundle 自动识别远端仓库、tag、资产列表和发布说明
+- `publish-release` 真实执行前已增加前置校验：当前要求工作区干净且本地 `HEAD` 已与目标远端分支同步，避免发布资产与远端 tag 指向不一致
+- `npm run package:delivery` 通过，生成 `output/delivery/Local-OCR-Desk-0.2.0-triple-platform-20260325-120820.tar`，内含 macOS dmg、Windows 安装包 / 便携版、Linux AppImage、`USAGE.md`、`RELEASE_NOTES.md`、`DELIVERY_MANIFEST.json`、`RELEASE_DRAFT.md`、`RELEASE_DRAFT.json` 与 `SHA256SUMS.txt`
+- 已补齐 `.github/workflows/build-{win,linux,mac}.yml` 与 `.gitea/workflows/build-{win,linux,mac}.yml`，当前三端可在各自 runner 上独立构建并复用统一校验脚本
 - macOS 与 Windows 产物中均包含 `ocr-models` 目录，内置中文检测模型、中文识别模型、英文识别模型和双字典
 - 已再次启动 `release/mac-arm64/Local OCR Desk.app`，进程可正常拉起，当前主进程 PID 为 `18093`
 - 旧的 `Tesseract.js` 依赖、前端 wasm 资源、`frontend/*.traineddata` 和 `frontend/wailsjs` 已清理
+- 已新增 `branding/local-ocr-mark.svg` 和 `branding/local-ocr-lockup.svg`，作为首发 logo 源文件
+- 已导出审核用品牌图 `output/branding/local-ocr-mark-sips.png` 与 `output/branding/local-ocr-lockup-sips.png`
+- 已用新 logo 覆盖 `electron/resources/icon.png`、`electron/resources/icon.ico`、`electron/resources/icon.icns`、`build/appicon.png` 与 `build/windows/icon.ico`
+- 已将页头品牌图切换到真实 logo，界面标题统一为 `Local OCR Desk`
+- 已生成首发截图 `output/screenshots/local-ocr-shot-01-home.png`、`local-ocr-shot-02-ocr-result.png`、`local-ocr-shot-03-light-theme.png` 和 `local-ocr-shot-04-result-detail.png`
+- 已整理商品介绍文案到 `output/marketing/product-listing.md`
+- `npm run build:renderer` 通过，新的品牌资源已进入前端生产构建
+- `npm run build` 通过，macOS 目录构建已验证新的 `icon.icns`
+- `npm run dist:win:dir` 通过，Windows 目录构建已验证新的 `icon.ico`

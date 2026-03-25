@@ -4,9 +4,9 @@
   --panel-border: rgba(255, 255, 255, 0.08);
   --text-main: #c9d1d9;
   --text-muted: #8b949e;
-  --accent-color: #58a6ff;
-  --accent-hover: #79c0ff;
-  --accent-bg: rgba(88, 166, 255, 0.1);
+  --accent-color: #ff6a3d;
+  --accent-hover: #ff865f;
+  --accent-bg: rgba(255, 106, 61, 0.16);
   --danger-color: #f85149;
   --success-color: #2ea043;
   --warning-color: #d29922;
@@ -15,12 +15,9 @@
   --radius-md: 10px;
   --radius-sm: 6px;
   
-  --bg-gradient-1: rgba(88, 166, 255, 0.05);
-  --bg-gradient-2: rgba(46, 160, 67, 0.05);
+  --bg-gradient-1: rgba(255, 106, 61, 0.08);
+  --bg-gradient-2: rgba(29, 169, 255, 0.1);
   --btn-primary-text: #000;
-  --logo-gradient-1: var(--accent-color);
-  --logo-gradient-2: #bc8cff;
-  --logo-text: #fff;
   --header-title: #fff;
   --dropzone-bg: rgba(0, 0, 0, 0.2);
   --info-item-bg: rgba(0, 0, 0, 0.2);
@@ -46,19 +43,16 @@
   --panel-border: rgba(31, 35, 40, 0.15);
   --text-main: #1f2328;
   --text-muted: #656d76;
-  --accent-color: #0969da;
-  --accent-hover: #0550ae;
-  --accent-bg: rgba(9, 105, 218, 0.1);
+  --accent-color: #ea580c;
+  --accent-hover: #c2410c;
+  --accent-bg: rgba(234, 88, 12, 0.12);
   --danger-color: #cf222e;
   --success-color: #1a7f37;
   --warning-color: #9a6700;
   
-  --bg-gradient-1: rgba(9, 105, 218, 0.05);
-  --bg-gradient-2: rgba(26, 127, 55, 0.05);
+  --bg-gradient-1: rgba(234, 88, 12, 0.07);
+  --bg-gradient-2: rgba(14, 165, 233, 0.09);
   --btn-primary-text: #fff;
-  --logo-gradient-1: #0969da;
-  --logo-gradient-2: #8250df;
-  --logo-text: #fff;
   --header-title: #1f2328;
   --dropzone-bg: rgba(255, 255, 255, 0.5);
   --info-item-bg: rgba(255, 255, 255, 0.5);
@@ -132,28 +126,26 @@ body {
 }
 
 .logo-icon {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, var(--logo-gradient-1), var(--logo-gradient-2));
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px var(--accent-bg);
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 18px 32px rgba(15, 23, 42, 0.22);
 }
 
-.logo-icon svg {
-  width: 24px;
-  height: 24px;
-  color: var(--logo-text);
+.logo-icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .header-title h1 {
   margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: 1.3rem;
+  font-weight: 700;
   color: var(--header-title);
-  letter-spacing: 0.5px;
+  letter-spacing: 0.2px;
 }
 
 .header-title p {

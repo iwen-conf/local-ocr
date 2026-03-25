@@ -14,9 +14,19 @@
     "build:renderer": "node ./scripts/prepare-paddle-models.mjs && npm --prefix frontend run build",
     "build": "node ./scripts/prepare-paddle-models.mjs && npm --prefix frontend run build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --dir",
     "dist": "node ./scripts/prepare-paddle-models.mjs && npm --prefix frontend run build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never",
-    "dist:mac": "node ./scripts/prepare-paddle-models.mjs && npm --prefix frontend run build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never --mac dir",
+    "dist:mac": "node ./scripts/prepare-paddle-models.mjs && npm --prefix frontend run build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never --mac dmg --arm64",
     "dist:win": "node ./scripts/prepare-paddle-models.mjs && npm --prefix frontend run build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never --win nsis portable --x64",
-    "dist:win:dir": "node ./scripts/prepare-paddle-models.mjs && npm --prefix frontend run build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never --win dir --x64"
+    "dist:win:dir": "node ./scripts/prepare-paddle-models.mjs && npm --prefix frontend run build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never --win dir --x64",
+    "dist:linux": "node ./scripts/prepare-paddle-models.mjs && npm --prefix frontend run build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never --linux AppImage --x64",
+    "verify:runtime:mac": "node ./scripts/verify-packaged-runtime.mjs mac",
+    "verify:runtime:win": "node ./scripts/verify-packaged-runtime.mjs win",
+    "verify:runtime:linux": "node ./scripts/verify-packaged-runtime.mjs linux",
+    "verify:runtime:all": "npm run verify:runtime:mac && npm run verify:runtime:win && npm run verify:runtime:linux",
+    "write:release-draft": "node ./scripts/write-release-draft.mjs",
+    "publish:release": "node ./scripts/publish-release.mjs",
+    "publish:release:github": "node ./scripts/publish-release.mjs --provider github",
+    "publish:release:gitea": "node ./scripts/publish-release.mjs --provider gitea",
+    "package:delivery": "./scripts/package-delivery-bundle.sh"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",
@@ -28,6 +38,7 @@
   "build": {
     "appId": "com.iwenconf.localocrgui",
     "productName": "Local OCR Desk",
+    "afterPack": "scripts/inject-platform-canvas-runtime.cjs",
     "directories": {
       "output": "release",
       "buildResources": "electron/resources"
@@ -55,8 +66,16 @@
     "mac": {
       "icon": "electron/resources/icon.icns",
       "target": [
-        "dir"
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64"
+          ]
+        }
       ]
+    },
+    "dmg": {
+      "artifactName": "${productName}-${version}-macOS-${arch}.${ext}"
     },
     "win": {
       "icon": "electron/resources/icon.ico",
@@ -69,6 +88,17 @@
         },
         {
           "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "linux": {
+      "category": "Utility",
+      "target": [
+        {
+          "target": "AppImage",
           "arch": [
             "x64"
           ]

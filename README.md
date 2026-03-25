@@ -44,11 +44,64 @@ npm run build
 npm run dist:win
 ```
 
+如果要输出 macOS Apple Silicon `dmg`：
+
+```bash
+npm run dist:mac
+```
+
+如果要输出 Linux AppImage：
+
+```bash
+npm run dist:linux
+```
+
 构建产物默认输出到 `release/`：
 
 - `release/Local OCR Desk-<version>-x64-setup.exe`
 - `release/Local OCR Desk-<version>-x64-portable.exe`
 - `release/win-unpacked/`
+- `release/Local OCR Desk-<version>-macOS-arm64.dmg`
+- `release/Local OCR Desk-<version>.AppImage`
+- `release/linux-unpacked/`
+
+如果要一次性构建 macOS Apple Silicon、Windows x64 和 Linux x64，并打包成一个总 tar：
+
+```bash
+npm run package:delivery
+```
+
+交付结果会输出到 `output/delivery/`，包含三端安装包、原始 unpacked 目录归档、`USAGE.md` 使用说明、`RELEASE_NOTES.md` 发版摘要、`DELIVERY_MANIFEST.json` 机器可读清单、可直接贴到发布页的 `RELEASE_DRAFT.md` / `RELEASE_DRAFT.json` 和 `SHA256SUMS.txt` 校验文件。
+
+如果要在本地检查三端产物里的模型、`onnxruntime-node` 和目标平台 `@napi-rs/canvas` 原生绑定是否完整：
+
+```bash
+npm run verify:runtime:all
+```
+
+也可以分别执行：
+
+```bash
+npm run verify:runtime:mac
+npm run verify:runtime:win
+npm run verify:runtime:linux
+```
+
+仓库当前也已经补齐 GitHub 与 Gitea 的三端构建工作流，分别在对应平台 runner 上执行打包并复用同一套运行时校验。
+
+如果要基于最新交付包生成发布动作预演：
+
+```bash
+npm run publish:release:github
+npm run publish:release:gitea
+```
+
+这两个命令默认都是 `dry-run`，只输出将要创建 / 更新的 release 和将要上传的资产列表。真正执行时，需要显式追加 `--execute`。GitHub 使用当前 `gh auth` 登录态，Gitea 需要提供 `GITEA_TOKEN`。
+
+真实发布前还需要满足两个前置条件：
+
+- 当前工作区必须是干净状态，不能带未提交或未跟踪的源码改动。
+- 当前分支的 `HEAD` 必须已经推送到对应远端分支，否则 release tag 会和本地生成的安装包不一致。
 
 如果要快速做本地 OCR 冒烟测试：
 

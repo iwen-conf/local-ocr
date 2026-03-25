@@ -3,6 +3,8 @@ node_modules
 frontend/dist
 .ace-tool/
 release
+output
 .tmp
 vendor/ocr-models
 node-compile-cache/
+.DS_Store

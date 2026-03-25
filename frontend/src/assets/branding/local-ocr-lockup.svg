@@ -1,0 +1,41 @@
+<svg width="1600" height="520" viewBox="0 0 1600 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="520" rx="48" fill="#F5F7FB"/>
+  <rect x="56" y="56" width="1488" height="408" rx="36" fill="white"/>
+  <g transform="translate(108 88) scale(0.34)">
+    <defs>
+      <linearGradient id="lockup-bg" x1="128" y1="112" x2="896" y2="912" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#14233B"/>
+        <stop offset="1" stop-color="#0B1220"/>
+      </linearGradient>
+      <linearGradient id="lockup-page" x1="302" y1="218" x2="717" y2="790" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#FFFFFF"/>
+        <stop offset="1" stop-color="#E8EEF7"/>
+      </linearGradient>
+      <linearGradient id="lockup-scan" x1="251" y1="270" x2="782" y2="736" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#FF7A45"/>
+        <stop offset="1" stop-color="#FF5A36"/>
+      </linearGradient>
+      <linearGradient id="lockup-ink" x1="360" y1="380" x2="667" y2="640" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#1DA9FF"/>
+        <stop offset="1" stop-color="#5EEAD4"/>
+      </linearGradient>
+    </defs>
+    <rect x="96" y="96" width="832" height="832" rx="232" fill="url(#lockup-bg)"/>
+    <circle cx="786" cy="238" r="84" fill="#1E3A5F" fill-opacity="0.55"/>
+    <circle cx="258" cy="792" r="118" fill="#17304E" fill-opacity="0.48"/>
+    <path d="M332 220C332 199.013 349.013 182 370 182H578L692 296V720C692 740.987 674.987 758 654 758H370C349.013 758 332 740.987 332 720V220Z" fill="url(#lockup-page)"/>
+    <path d="M578 182L692 296H608C591.431 296 578 282.569 578 266V182Z" fill="#D6E0EF"/>
+    <path d="M408 368H614" stroke="#0E1E36" stroke-width="42" stroke-linecap="round"/>
+    <path d="M408 466H614" stroke="#0E1E36" stroke-opacity="0.86" stroke-width="42" stroke-linecap="round"/>
+    <path d="M408 564H560" stroke="url(#lockup-ink)" stroke-width="42" stroke-linecap="round"/>
+    <path d="M408 644H524" stroke="#FF7A45" stroke-width="30" stroke-linecap="round"/>
+    <path d="M286 336V274C286 241.967 311.967 216 344 216H402" stroke="url(#lockup-scan)" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M738 688V750C738 782.033 712.033 808 680 808H622" stroke="url(#lockup-scan)" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M626 216H680C712.033 216 738 241.967 738 274V326" stroke="#4FD1FF" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" opacity="0.94"/>
+    <path d="M398 808H344C311.967 808 286 782.033 286 750V698" stroke="#4FD1FF" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" opacity="0.94"/>
+    <circle cx="744" cy="678" r="18" fill="#FF7A45"/>
+  </g>
+  <text x="460" y="220" fill="#0F172A" font-family="sans-serif" font-size="92" font-weight="800" letter-spacing="1">Local OCR Desk</text>
+  <text x="460" y="300" fill="#475569" font-family="sans-serif" font-size="40" font-weight="700">本地离线文字识别工作台</text>
+  <text x="460" y="360" fill="#FF6A3D" font-family="sans-serif" font-size="32" font-weight="700">OCR faster. Text stays on device.</text>
+</svg>

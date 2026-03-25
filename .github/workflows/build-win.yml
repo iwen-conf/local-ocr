@@ -49,37 +49,7 @@ jobs:
         run: npm run dist:win
 
       - name: Verify packaged OCR runtime
-        run: |
-          if (-not (Test-Path "release/win-unpacked/resources/ocr-models/ch_PP-OCRv5_server_det.onnx")) {
-            throw "Missing ch_PP-OCRv5_server_det.onnx"
-          }
-
-          if (-not (Test-Path "release/win-unpacked/resources/ocr-models/ch_PP-OCRv5_rec_server_infer.onnx")) {
-            throw "Missing ch_PP-OCRv5_rec_server_infer.onnx"
-          }
-
-          if (-not (Test-Path "release/win-unpacked/resources/ocr-models/en_PP-OCRv5_rec_mobile_infer.onnx")) {
-            throw "Missing en_PP-OCRv5_rec_mobile_infer.onnx"
-          }
-
-          if (-not (Test-Path "release/win-unpacked/resources/ocr-models/ppocrv5_dict.txt")) {
-            throw "Missing ppocrv5_dict.txt"
-          }
-
-          if (-not (Test-Path "release/win-unpacked/resources/ocr-models/ppocrv5_en_dict.txt")) {
-            throw "Missing ppocrv5_en_dict.txt"
-          }
-
-          if (-not (Test-Path "release/win-unpacked/resources/app.asar.unpacked/node_modules/onnxruntime-node/bin/napi-v6/win32/x64/onnxruntime_binding.node")) {
-            throw "Missing Windows onnxruntime binding"
-          }
-
-          $canvasPackage = Test-Path "release/win-unpacked/resources/app.asar.unpacked/node_modules/@napi-rs/canvas-win32-x64-msvc"
-          $canvasBinding = Get-ChildItem "release/win-unpacked/resources/app.asar.unpacked" -Recurse -Filter "skia.win32-x64-msvc.node" -ErrorAction SilentlyContinue
-
-          if (-not $canvasPackage -and -not $canvasBinding) {
-            throw "Missing Windows canvas native binding"
-          }
+        run: node ./scripts/verify-packaged-runtime.mjs win
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

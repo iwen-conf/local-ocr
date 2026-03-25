@@ -1,6 +1,7 @@
 import { ChangeEvent, DragEvent, KeyboardEvent as ReactKeyboardEvent, ReactNode, startTransition, useEffect, useMemo, useRef, useState } from 'react';
 import './App.css';
 import { OCRItem, OCRLanguage, recognizeImage, shutdownOCRWorker } from './lib/ocr';
+import brandMarkSrc from './assets/branding/local-ocr-mark.svg';
 
 const IconImage = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>;
 const IconUpload = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>;
@@ -2516,11 +2517,11 @@ function App() {
             <header className="app-header">
                 <div className="header-left">
                     <div className="logo-icon">
-                        <IconImage />
+                        <img alt="Local OCR Desk logo" src={brandMarkSrc} />
                     </div>
                     <div className="header-title">
-                        <h1>Offline OCR Desk</h1>
-                        <p>本地离线文字识别，极速且隐私安全。</p>
+                        <h1>Local OCR Desk</h1>
+                        <p>本地离线文字识别，OCR 更快，文本不出机。</p>
                     </div>
                 </div>
                 <div className="header-right">
