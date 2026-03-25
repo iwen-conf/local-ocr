@@ -10,6 +10,7 @@ function parseArgs(argv) {
     bundleDir: null,
     clobber: false,
     execute: false,
+    includeBundleTar: false,
     provider: 'github',
     remote: null,
     target: null,
@@ -33,6 +34,9 @@ function parseArgs(argv) {
         break;
       case '--execute':
         options.execute = true;
+        break;
+      case '--include-bundle-tar':
+        options.includeBundleTar = true;
         break;
       case '--clobber':
         options.clobber = true;
@@ -171,7 +175,7 @@ function ensurePublishPreconditions({provider, remoteName}) {
   }
 }
 
-function resolveAssetEntries(bundleDir, releaseDraft) {
+function resolveAssetEntries(bundleDir, releaseDraft, {includeBundleTar = false} = {}) {
   const assetEntries = releaseDraft.assets.map((asset) => ({
     label: asset.label,
     path: path.join(bundleDir, asset.relativePath),
@@ -188,11 +192,14 @@ function resolveAssetEntries(bundleDir, releaseDraft) {
     path: path.join(bundleDir, 'DELIVERY_MANIFEST.json'),
     relativePath: 'DELIVERY_MANIFEST.json',
   });
-  assetEntries.push({
-    label: 'Full Delivery Archive',
-    path: path.join(path.dirname(bundleDir), releaseDraft.bundleTarRelativePath),
-    relativePath: releaseDraft.bundleTarRelativePath,
-  });
+
+  if (includeBundleTar) {
+    assetEntries.push({
+      label: 'Full Delivery Archive',
+      path: path.join(path.dirname(bundleDir), releaseDraft.bundleTarRelativePath),
+      relativePath: releaseDraft.bundleTarRelativePath,
+    });
+  }
 
   return assetEntries;
 }
@@ -209,10 +216,12 @@ async function publishGithub({assetEntries, execute, releaseDraft, repoSpec, tar
   const notesFile = path.join(releaseDraft.bundleDir, 'RELEASE_DRAFT.md');
   const commonArgs = ['-R', repoSpec];
   let releaseExists = false;
+  let existingAssets = new Set();
 
   try {
-    run('gh', ['release', 'view', releaseDraft.tagName, ...commonArgs, '--json', 'id']);
+    const releaseInfo = JSON.parse(run('gh', ['release', 'view', releaseDraft.tagName, ...commonArgs, '--json', 'id,assets']));
     releaseExists = true;
+    existingAssets = new Set((releaseInfo.assets ?? []).map((asset) => asset.name));
   } catch {
     releaseExists = false;
   }
@@ -260,6 +269,13 @@ async function publishGithub({assetEntries, execute, releaseDraft, repoSpec, tar
   run('gh', releaseExists ? editArgs : createArgs);
 
   for (const asset of assetEntries) {
+    const assetName = path.basename(asset.path);
+
+    if (releaseExists && existingAssets.has(assetName) && !clobber) {
+      console.log(`[publish] github asset exists, skipping: ${assetName}`);
+      continue;
+    }
+
     const uploadArgs = [
       'release',
       'upload',
@@ -270,7 +286,7 @@ async function publishGithub({assetEntries, execute, releaseDraft, repoSpec, tar
     ];
 
     run('gh', uploadArgs);
-    console.log(`[publish] github asset uploaded: ${path.basename(asset.path)}`);
+    console.log(`[publish] github asset uploaded: ${assetName}`);
   }
 
   console.log(`[publish] github release updated: ${repoSpec} ${releaseDraft.tagName}`);
@@ -387,13 +403,15 @@ async function main() {
   const releaseDraft = await readJson(path.join(bundleDir, 'RELEASE_DRAFT.json'));
   const remoteName = options.remote ?? defaults.remote;
   const remoteInfo = parseRemoteUrl(getRemoteUrl(remoteName));
-  const assetEntries = resolveAssetEntries(bundleDir, releaseDraft);
+  const resolvedAssetEntries = resolveAssetEntries(bundleDir, releaseDraft, {
+    includeBundleTar: options.includeBundleTar,
+  });
 
   releaseDraft.bundleDir = bundleDir;
 
   if (options.provider === 'gitea') {
     await publishGitea({
-      assetEntries,
+      assetEntries: resolvedAssetEntries,
       clobber: options.clobber,
       execute: options.execute,
       releaseDraft,
@@ -408,7 +426,7 @@ async function main() {
     : `${remoteInfo.host}/${remoteInfo.owner}/${remoteInfo.repo}`;
 
   await publishGithub({
-    assetEntries,
+    assetEntries: resolvedAssetEntries,
     clobber: options.clobber,
     execute: options.execute,
     releaseDraft,
